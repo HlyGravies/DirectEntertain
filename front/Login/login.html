@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Page</title>
+        <link rel="stylesheet" href="./login.css">
+    </head>
+
+    <body>
+        <div class="container" style="text-align:center;">
+            <h2>ログイン</h2>
+            <form method="POST" action="">
+                <div class = "userId">
+                    <label for="user_id">ユーザID</label>
+                    <input type="text" id="user" name="userid" required>
+                </div>
+                
+                <br>
+
+                <div class="password">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="pass" name="password" value="" required>
+                    <button id="btn_view" type="button">表示</button>
+                </div>
+
+                <div class = "LoginBtn">
+                    <input type="submit" value="ログイン">
+                </div>
+
+                <div class="links">
+                    <br>
+                    <a href="">パスワードを忘れた場合</a>
+                    <br><br>
+                    <a href="">新しいアカウントを作成</a>
+            </form>
+        </div>
+        <script src="../js/login.js"></script>
+    </body>
+
+</html>
