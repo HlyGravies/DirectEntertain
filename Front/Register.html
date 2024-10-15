@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新規登録画面</title>
+    <link rel="stylesheet" type="text/css" href="./Register.css" />
+    <link rel="manifest" href="../manifest.json">
+
+  </head>
+
+  <body style="text-align:center;">
+    <form id="registration-form" method="post" action="Register.php">
+
+      <div class="Username">
+        <label for="user_name">Username:</label>
+        <input type="text" id="name" name="name" required /><br />
+      </div>
+
+      <div class="password">
+        <label for="password">password:</label>
+        <input type="password" id="password" name="password" value="" required />
+        <button id="togglePassword" type="button">表示</button>
+      </div>
+
+      <div class="confPass">
+        <label for="password">Confirm password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" value="" required />
+        <button id="toggleConfirmPassword" type="button">表示</button>
+      </div>
+
+      <br><br>
+
+      <div id="response"></div>
+
+      <!-- <input type="submit" value="登録" onclick="redirectToProfile()"> -->
+      <a href="../Login/login.html" class="btn btn-danger btn-lg" role="button">戻る</a>
+    </form>
+
+    <script src="../js/script.js"></script>
+
+  </body>
+
+</html>
