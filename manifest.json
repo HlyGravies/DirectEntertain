@@ -1,6 +1,6 @@
 {
-  "name": "My Progressive Web App",
-  "short_name": "MyPWA",
+  "name": "Direct Entertain",
+  "short_name": "DE",
   "start_url": "/DEproject/Front/login.html", 
   "display": "standalone",
   "background_color": "#ffffff",

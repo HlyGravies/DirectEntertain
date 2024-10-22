@@ -25,10 +25,10 @@
     <body>
         <div class="container" style="text-align:center;">
             <h2>ログイン</h2>
-            <form method="POST" action="">
-                <div class="userId">
-                    <label for="user_id">ユーザID</label>
-                    <input type="text" id="user" name="userid" required>
+            <form method="POST" action="../API/LoginAuth.php">
+                <div class="username">
+                    <label for="username">ユーザ名</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
 
                 <br>
@@ -39,6 +39,8 @@
                     <button id="togglePassword" type="button">表示</button>
                 </div>
 
+                <br/>
+                
                 <div class="LoginBtn">
                     <input type="submit" value="ログイン">
                 </div>
