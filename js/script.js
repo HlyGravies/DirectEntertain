@@ -22,14 +22,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    if (registerPasswordInput && toggleRePasswordBtn) {
+    // To show/hidden password in register page
+    if (toggleRePasswordBtn) {
         toggleRePasswordBtn.addEventListener("click", function () {
             if (registerPasswordInput.type === "password") {
                 registerPasswordInput.type = "text";
-                togglePasswordBtn.textContent = "非表示";
+                toggleRePasswordBtn.textContent = "非表示";
             } else {
                 registerPasswordInput.type = "password";
-                togglePasswordBtn.textContent = "表示";
+                toggleRePasswordBtn.textContent = "表示";
             }
         });
     }
