@@ -1,63 +1,50 @@
 <?php
 
-/*
-    Pending
-*/
-
 // Kết nối cơ sở dữ liệu
-include("mysqlConnect.php"); // Giả sử mysqlConnect.php chứa hàm connect_db()
+include("mysqlConnect.php");
+include("mysqlClose.php");
+include("function.php");
 
 // Bắt đầu session để lưu trữ thông tin đăng nhập
 session_start();
 
-// // Nhận thông tin từ form đăng nhập
-// $username = $_POST['username'];
-// $pass = $_POST['password'];
-
-
-if (isset($_POST['username']) && isset($_POST['password'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-} else {
-    die("Thiếu dữ liệu đăng nhập!");
-}
-
-// Kết nối tới cơ sở dữ liệu bằng PDO
 $pdo = connect_db();
 
-try {
-    // Chuẩn bị truy vấn để kiểm tra người dùng với deuser
-    $sql = "SELECT * FROM users WHERE username = :username";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':username', $username);
-    $stmt->execute();
+$response = [
+    "result" => "error",
+    "errMsg" => null,
+];
 
-    // Kiểm tra xem người dùng có tồn tại không
-    if ($stmt->rowCount() > 0) {
-        // Người dùng tồn tại, lấy dữ liệu người dùng
-        $user = $stmt->fetch();
+// Kiểm tra xem phương thức HTTP có phải là POST hay không
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Lấy dữ liệu JSON từ yêu cầu
+    $postData = json_decode(file_get_contents('php://input'), true);
 
-        // Kiểm tra mật khẩu
-        if (password_verify($password, $user['password'])) {
-            // Đăng nhập thành công
-            $_SESSION['username'] = $user['username']; // Lưu tên người dùng trong session
-            echo "Đăng nhập thành công! Xin chào, " . $user['username'];
-
-            // Chuyển hướng tới trang giải trí hoặc trang cá nhân
-            header("Location: entertainment.php"); // Trang sau khi đăng nhập thành công
-            exit();
+    // Kiểm tra xem userId có tồn tại trong dữ liệu đầu vào không
+    if (isset($postData['username']) && isset($postData['password'])) {
+        // Kiểm tra xem userId có tồn tại trong cơ sở dữ liệu không và xác thực người dùng
+        if (isUserNameExist($pdo, $postData['username']) && userAuthentication($pdo, $postData)) {
+            // Lưu thông tin người dùng vào session (nếu cần)
+            $_SESSION['username'] = $postData['username'];
+            $response["result"] = "success";
+            $response["userData"] = getUserInfo($pdo, $postData["username"]);
         } else {
-            // Mật khẩu không đúng
-            echo "Sai mật khẩu!";
+            $response["errMsg"] = "ユーザ名またはパスワードが違います"; // "User ID or password is incorrect"
         }
     } else {
-        // Không tìm thấy người dùng với deuser đã nhập
-        echo "Không tìm thấy người dùng!";
+        $response["errMsg"] = "ユーザ名とパスワードは必須です"; // "User ID and password are required"
     }
-} catch (PDOException $e) {
-    // Xử lý lỗi kết nối hoặc truy vấn
-    echo "Lỗi: " . $e->getMessage();
+} else {
+    $response["errMsg"] = "無効なリクエストです"; // "Invalid request."
 }
 
-// Đóng kết nối (không bắt buộc vì PDO tự động giải phóng tài nguyên khi script kết thúc)
+// Đặt tiêu đề cho phản hồi
+header('Content-Type: application/json');
+
+// Gửi phản hồi về cho client
+echo json_encode($response, JSON_UNESCAPED_UNICODE);
+
+// Đóng kết nối cơ sở dữ liệu
+require_once 'mysqlClose.php';
+disconnect_db($pdo);
 ?>
