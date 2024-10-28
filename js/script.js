@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let registerPasswordInput = document.getElementById("rePassword");
     let toggleRePasswordBtn = document.getElementById("toggleRePassword");
 
-    let confirmPasswordInput = document.getElementById("confirm_password");
-    let toggleConfirmPasswordBtn = document.getElementById("toggleConfirmPassword");
+    // let confirmPasswordInput = document.getElementById("confirm_password");
+    // let toggleConfirmPasswordBtn = document.getElementById("toggleConfirmPassword");
 
     if (togglePasswordBtn) {
         togglePasswordBtn.addEventListener("click", function () {
@@ -56,4 +56,72 @@ document.addEventListener("DOMContentLoaded", function () {
     //         }
     //     });
     // }
+
+    // To transform HTML content of Login.html into JSON
+    document.querySelector('form').addEventListener('submit', function (event) {
+        event.preventDefault(); // To prevent form for using default setting so that fetch can be use
+
+        // Extract data from the form
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+
+        // Send data under Json to LoginAuth.php
+        fetch('../API/loginAuth.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    alert("login successful");
+                    // Redirect
+                    window.location.href = "../Front/home.html"
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error", error);
+            })
+    })
+
+    // To transform HTML of Register.html content into JSON
+    document.getElementById('registration-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        console.log("Form submitted");
+
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("rePassword").value;
+
+        // Send data to Register.php through fetch
+        fetch("../API/register.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({username, email, password})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === "success") {
+                    alert("Register successfully");
+                    // Redirect
+                    window.location.href = "../Front/login.html";
+                } else {
+                    alert(data.message || "Registration failed");
+                }
+
+            })
+            .catch(error => {
+                console.error("Error", error);
+            })
+    })
 });
