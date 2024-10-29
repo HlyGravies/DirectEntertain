@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isUserNameExist($pdo, $postData['username']) && userAuthentication($pdo, $postData)) {
             // Lưu thông tin người dùng vào session (nếu cần)
             $_SESSION['username'] = $postData['username'];
+
             $response["result"] = "success";
             $response["userData"] = getUserInfo($pdo, $postData["username"]);
         } else {
