@@ -22,7 +22,7 @@ if (!isset($_SESSION['username'])) {
 <div id="profileInfo">
     <!-- Avatar -->
     <div>
-        <img src="path_to_avatar.jpg" alt="User Avatar" id="userAvatar" width="100" height="100">
+        <img src="" alt="User Avatar" id="userAvatar" width="100" height="100">
     </div>
 
     <!-- Username -->
