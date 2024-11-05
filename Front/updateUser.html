@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User Information</title>
+</head>
+<body>
+<h2>Update Your Information</h2>
+
+<form id="updateUserForm" action="updateUser.php" method="POST" enctype="multipart/form-data">
+    <!-- Hidden User ID -->
+    <input type="hidden" name="userId" value="12345"> <!-- Lấy từ session nếu có -->
+
+    <!-- Update Username -->
+    <label for="userName">Username:</label>
+    <input type="text" id="userName" name="userName" value="Current Username" required>
+    <br>
+
+    <!-- Update Profile Image -->
+    <label for="iconPath">Profile Image:</label>
+    <input type="file" id="iconPath" name="iconPath" accept="image/*">
+    <br>
+
+    <!-- Change Password Section -->
+    <h3>Change Password</h3>
+    <label for="currentPassword">Current Password:</label>
+    <input type="password" id="currentPassword" name="currentPassword" required>
+    <br>
+
+    <label for="newPassword">New Password:</label>
+    <input type="password" id="newPassword" name="newPassword" required>
+    <br>
+
+    <label for="confirmPassword">Confirm New Password:</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" required>
+    <br>
+
+    <!-- Submit Button -->
+    <button type="submit">Save Changes</button>
+</form>
+</body>
+</html>
+
+
