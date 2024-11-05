@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.result === 'success') {
                     alert("login successful");
                     // Redirect
-                    window.location.href = "../Front/home.html"
+                    window.location.href = "../Front/home.php"
                 } else {
                     alert(data.message);
                 }
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
     })
 
-    // To transform HTML of Register.html content into JSON
+    // To transform HTML of register.html content into JSON
     document.getElementById('registration-form').addEventListener('submit', function (event) {
         event.preventDefault();
         console.log("Form submitted");
@@ -124,4 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error", error);
             })
     })
+
+
+
 });

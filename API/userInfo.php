@@ -7,7 +7,7 @@ include("mysqlConnect.php");
 include("mysqlClose.php");
 
 // liên kết function.php
-include ("function.php");
+include("function.php");
 
 // Gọi hàm để kết nối đến database
 $pdo = connect_db();
@@ -23,25 +23,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Lấy dữ liệu JSON từ body của yêu cầu và chuyển đổi thành mảng PHP
     $userData = json_decode(file_get_contents('php://input'), true);
 
-    if(!isUserIdExist($pdo, $userData)){
+    // Kiểm tra xem userID có tồn tại không
+    if (!isset($userData['userId']) || !isUserIdExist($pdo, $userData['userId'])) {
         $response["result"] = "error";
         $response["message"] = "USERIDが見つかりません";
-    }
-    if($response["message"] === null){
+    } else {
         try {
-            $userData = getUserInfo($pdo, $userData);
+            // Lấy thông tin người dùng dựa trên userID
+            $userData = getUserIdInfo($pdo, $userData['userId']);
             $response["result"] = "success";
             $response['userData'] = $userData;
         } catch (PDOException $e) {
-            echo "Error: " . $e -> getMessage();
+            $response["result"] = "error";
+            $response["message"] = "Error: " . $e->getMessage();
         }
-    } else{
-        $response["result"] = "error";
     }
 }
+
 header('Content-Type: application/json');
 echo json_encode($response, JSON_UNESCAPED_UNICODE);
 
-require_once 'mysqlClose.php';
+// Đóng kết nối cơ sở dữ liệu
 disconnect_db($pdo);
+
 ?>
