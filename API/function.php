@@ -4,6 +4,15 @@ function isUserIdExist($pdo, $userId)
 {
     $getUserSql = "SELECT userId FROM users WHERE userId = :userId";
     $getUserStmt = $pdo->prepare($getUserSql);
+    $getUserStmt->bindParam(':userId', $userId); // Chỉ định loại biến (nếu `userId` là kiểu INT)
+    $getUserStmt->execute();
+    return $getUserStmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getUserIdInfo($pdo, $userId)
+{
+        $getUserSql = "SELECT userId, username, email, iconPath FROM users WHERE userId = :userId";
+    $getUserStmt = $pdo->prepare($getUserSql);
     $getUserStmt->bindParam(':userId', $userId);
     $getUserStmt->execute();
     return $getUserStmt->fetch(PDO::FETCH_ASSOC);
@@ -36,7 +45,7 @@ function userAuthentication($pdo, $loginData)
 // Lấy thông tin của user
 function getUserInfo($pdo, $username)
 {
-    $getUserSql = "SELECT userId, userName, email, iconPath FROM users WHERE username = :username";
+    $getUserSql = "SELECT userId, username, email, iconPath FROM users WHERE username = :username";
     $getUserStmt = $pdo->prepare($getUserSql);
     $getUserStmt->bindParam(':username', $username);
     $getUserStmt->execute();
