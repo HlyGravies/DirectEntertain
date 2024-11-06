@@ -7,6 +7,24 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+require_once '../API/mysqlConnect.php'; // Kết nối đến cơ sở dữ liệu
+$pdo = connect_db();
+
+// Get userID from sesion
+$userId = $_SESSION['userId'];
+
+// Thực hiện truy vấn để lấy các mục trong bảng demain mà user có quyền truy cập
+$sql = "SELECT d.demainId, d.title, d.description, d.content_url, d.iconPath
+        FROM demain d
+        JOIN user_demain ud ON d.demainId = ud.demainId
+        WHERE ud.userId = :userId";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+$stmt->execute();
+
+// Store everything into $demainContent
+$demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 
@@ -17,6 +35,8 @@ if (!isset($_SESSION['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="./login.css">
     <title>Home</title>
     <style>
         /* Reset margin và padding */
@@ -121,6 +141,56 @@ if (!isset($_SESSION['username'])) {
         .container {
             display: flex;
         }
+
+        /* CSS cho bố cục lưới */
+        .DEContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Tăng kích thước tối thiểu của ô */
+            gap: 25px; /* Tăng khoảng cách giữa các ô */
+            padding: 20px;
+        }
+
+        .file-item {
+            background-color: #f1f3f4;
+            border-radius: 8px;
+            padding: 20px 20px 10px 20px; /* Điều chỉnh padding để giảm khoảng cách phía dưới */
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            font-size: 20px;
+        }
+
+        .file-item:hover {
+            transform: scale(1.05);
+        }
+
+        .file-icon {
+            width: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Di chuyển ảnh lên trên */
+            overflow: hidden;
+        }
+
+        .file-icon img {
+            width: 90%;
+            height: auto;
+            margin-bottom: 5px; /* Thêm khoảng cách giữa ảnh và chữ */
+            border-radius: 8px;
+        }
+
+        .file-name {
+            margin-top: 20px;
+            font-size: 20px; /* Tăng kích thước chữ cho tên file */
+            color: #333;
+        }
+
+        .file-preview {
+            display: none;
+            padding: 20px;
+        }
+
     </style>
 </head>
 
@@ -142,10 +212,12 @@ if (!isset($_SESSION['username'])) {
     <!-- User Options -->
     <div class="user-options">
         <div class="add-button">
-            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;">+ New</button>
+            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;">
+                + New
+            </button>
         </div>
         <div class="user-icon">
-            <a href="./userInfo.html"><img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Icon" width="32" height="32"></a>
+            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="32" height="32"></a>
         </div>
     </div>
 </div>
@@ -155,21 +227,73 @@ if (!isset($_SESSION['username'])) {
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <li>My Collection</li>
-            <li>Video</li>
-            <li>Music</li>
-            <li>Picture</li>
-            <li>Favorite</li>
+            <li>My DEC</li>
+            <li>Video DEC</li>
+            <li>Music DEC</li>
+            <li>Picture DEC</li>
+            <li>Favorite DEC</li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <h2>My Drive</h2>
-        <!-- Content sẽ hiển thị tên người dùng dưới dạng in hoa -->
-        <p>Welcome back, <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?></p>
+        <h1>Welcome back, <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?></h1>
+        <br> <br>
+
+        <!-- My DEC Section -->
+        <h2>My DEC</h2>
+        <div class="DEContainer">
+            <!-- Các ô nội dung được tạo động từ cơ sở dữ liệu -->
+            <?php foreach ($demainContent as $content): ?>
+                <div class="file-item" onclick="window.location.href ='<?= htmlspecialchars($content['content_url']) ?>'">
+                    <div class="file-icon">
+                        <img src="<?= htmlspecialchars($content['iconPath']) ?>" alt="Icon" width="100" height="222">
+                    </div>
+                    <div class="file-name"><?= htmlspecialchars($content['title']) ?></div>
+                    <div class="file-description"><?= htmlspecialchars($content['description']) ?></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
+
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get userId from session
+        const userId = <?php echo json_encode($_SESSION["userId"]); ?>
+
+            // Send POST request to userInfo.php in order to get the user information
+            fetch("http://localhost/DEproject/API/userInfo.php", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({userId: userId})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === "success") {
+                        document.getElementById("userIcon").src = data.userData.iconPath;
+                    } else {
+                        console.error("Error:", data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error)
+                });
+
+        // Hàm JavaScript để hiển thị nội dung chi tiết khi nhấp vào file
+        function showPreview(fileId) {
+            // Ẩn tất cả các nội dung chi tiết
+            document.querySelectorAll('.file-preview').forEach(preview => {
+                preview.style.display = 'none';
+            });
+
+            // Hiển thị nội dung chi tiết của file được nhấp vào
+            document.getElementById(fileId).style.display = 'block';
+        }
+    });
+</script>
 </body>
 
 </html>
