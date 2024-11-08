@@ -1,0 +1,146 @@
+/* Reset margin và padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f1f3f4;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header .logo {
+    display: flex;
+    align-items: center;
+}
+
+.header .logo img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.header .search-bar {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+}
+
+.header .search-bar input {
+    width: 100%;
+    padding: 8px 12px;
+    padding-left: 35px;
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+    outline: none;
+}
+
+.header .search-bar img {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    opacity: 0.5;
+}
+
+.header .user-options {
+    display: flex;
+    align-items: center;
+}
+
+.header .user-options .user-icon {
+    margin-left: 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 32px;
+    height: 32px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #f1f3f4;
+    padding-top: 20px;
+    height: 100vh;
+    border-right: 1px solid #e0e0e0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    color: #5f6368;
+    cursor: pointer;
+}
+
+.sidebar ul li:hover {
+    background-color: #e8f0fe;
+    color: #1967d2;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+}
+
+/* CSS cho bố cục lưới */
+.DEContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Tăng kích thước tối thiểu của ô */
+    gap: 25px; /* Tăng khoảng cách giữa các ô */
+    padding: 20px;
+}
+
+.file-item {
+    background-color: #f1f3f4;
+    border-radius: 8px;
+    padding: 20px 20px 10px 20px; /* Điều chỉnh padding để giảm khoảng cách phía dưới */
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    font-size: 20px;
+}
+
+.file-item:hover {
+    transform: scale(1.05);
+}
+
+.file-icon {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Di chuyển ảnh lên trên */
+    overflow: hidden;
+}
+
+.file-icon img {
+    width: 90%;
+    height: auto;
+    margin-bottom: 5px; /* Thêm khoảng cách giữa ảnh và chữ */
+    border-radius: 8px;
+}
+
+.file-name {
+    margin-top: 20px;
+    font-size: 20px; /* Tăng kích thước chữ cho tên file */
+    color: #333;
+}
