@@ -8,6 +8,8 @@ if (!isset($_SESSION['username'])) {
 }
 ?>
 
+
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -17,7 +19,7 @@ if (!isset($_SESSION['username'])) {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../CSS/home.css">
-    <title>Home</title>
+    <title>Video Dec</title>
 </head>
 
 <body>
@@ -63,17 +65,16 @@ if (!isset($_SESSION['username'])) {
 
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Welcome back, <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?></h1>
-        <br><br>
+        <br> <br>
 
         <!-- My DEC Section -->
-        <h2>Main DEC</h2>
+        <h2>Video Dec</h2>
         <div class="DEContainer" id="contentContainer">
             <!-- Nội dung sẽ được tạo động từ API -->
         </div>
     </div>
-</div>
 
+</div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Get userId from session
@@ -99,8 +100,8 @@ if (!isset($_SESSION['username'])) {
                     console.error('Error fetching user data:', error)
                 });
 
-        // Fetch data from API and display it in the contentContainer
-        fetch("http://localhost/DEproject/API/getDec.php")
+        // Fetch data from the API with the condition to only get type "video"
+        fetch("http://localhost/DEproject/API/getDec.php?type=video")
             .then(response => response.json())
             .then(data => {
                 if (data.result === "success") {
@@ -133,5 +134,7 @@ if (!isset($_SESSION['username'])) {
         }
     });
 </script>
+</script>
 </body>
+
 </html>
