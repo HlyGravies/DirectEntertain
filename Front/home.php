@@ -18,6 +18,66 @@ if (!isset($_SESSION['username'])) {
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../CSS/home.css">
     <title>Home</title>
+    <style>
+        /* CSS cho pop-up */
+        .popup-overlay {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-window {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            width: 300px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-window h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .popup-window .option-button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .insert-button {
+            background-color: #4CAF50; /* Màu xanh lá cho Insert Manually */
+        }
+
+        .dec-button {
+            background-color: #1a73e8; /* Màu xanh dương cho Using DEC */
+        }
+
+        .close-popup {
+            margin-top: 15px;
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -37,13 +97,31 @@ if (!isset($_SESSION['username'])) {
 
     <!-- User Options -->
     <div class="user-options">
+        <!-- Add button -->
         <div class="add-button">
-            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;">
-                + New
-            </button>
+            <button onclick="openPopup()">+ New</button>
         </div>
+
+        <!-- Pop-up Overlay & Pop-up Window -->
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup-window">
+                <h3>Select an Option</h3>
+                <button class="option-button insert-button" onclick="insertManually()">Insert manually</button>
+                <button class="option-button dec-button" onclick="useDEC()">Using DEC</button>
+                <button class="close-popup" onclick="closePopup()">Close</button>
+            </div>
+        </div>
+
+        <!-- Pop-up nhập ID cho "Insert manually" -->
+        <div class="popup-window" id="insertBox" style="display: none;">
+            <h3>Enter Demain ID</h3>
+            <input type="number" id="demainIdInput" placeholder="Enter demain ID">
+            <button class="confirm-button" onclick="submitDemainId()">Confirm</button>
+            <button class="close-popup" onclick="closePopup()">Close</button>
+        </div>
+
         <div class="user-icon">
-            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="32" height="32"></a>
+            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="50" height="50"></a>
         </div>
     </div>
 </div>
@@ -132,6 +210,64 @@ if (!isset($_SESSION['username'])) {
             });
         }
     });
+
+    // open pop-up
+    function openPopup() {
+        document.getElementById('popupOverlay').style.display = 'block';
+        document.getElementById('popupWindow').style.display = 'block';
+        document.getElementById('insertBox').style.display = 'none';
+    }
+
+    // Close pop-up
+    function closePopup() {
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+
+
+    // "Insert manually" function
+    function insertManually() {
+        document.getElementById('popupWindow').style.display = 'none';
+        document.getElementById('insertBox').style.display = 'block';
+    }
+
+    // Send demainID to API to add into database
+    function submitDemainId() {
+        const demainId = document.getElementById('demainIdInput').value;
+
+        if (!demainId) {
+            alert("Please enter a valid Demain ID");
+            return;
+        }
+
+        fetch("http://localhost/DEproject/API/addDEC.php", {
+            method: 'POST' ,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ demainId: parseInt(demainId) })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === "success") {
+                    alert("Demain ID added successfully");
+                    closePopup();
+                } else {
+                    alert("Error:" + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error connecting to server.");
+            });
+    }
+
+    // "Using DEC" function
+    function useDEC() {
+        closePopup();
+        alert("Using DEC selected.");
+        // Thực hiện các hành động cần thiết khi chọn "Using DEC"
+    }
+
 </script>
 </body>
 </html>
