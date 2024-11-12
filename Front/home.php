@@ -101,7 +101,7 @@ if (!isset($_SESSION['username'])) {
         <div class="add-button">
             <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;"
                     onclick="openPopup()">+ New</button>
-        </div>
+        </div>　
 
         <!-- Pop-up Overlay & Pop-up Window -->
         <div class="popup-overlay" id="popupOverlay">
@@ -144,7 +144,7 @@ if (!isset($_SESSION['username'])) {
 
         <!-- Main Content -->
         <div class="main-content">
-            <h1>Welcome back, <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?></h1>
+            <h1>Hello <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?>, What would you like to do today?</h1>
             <br><br>
 
             <!-- My DEC Section -->
@@ -157,6 +157,7 @@ if (!isset($_SESSION['username'])) {
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            fetchContent();
             // Get userId from session
             const userId = <?php echo json_encode($_SESSION["userId"]); ?>
 
@@ -235,6 +236,13 @@ if (!isset($_SESSION['username'])) {
             document.getElementById('insertBoxOverlay').style.display = 'none';
         }
 
+        // "Using DEC" function
+        function useDEC() {
+            closePopup();
+            alert("Using DEC selected.");
+            // Thực hiện các hành động cần thiết khi chọn "Using DEC"
+        }
+
         // Return button for insert box
 
         // Send demainID to API to add into database
@@ -258,6 +266,9 @@ if (!isset($_SESSION['username'])) {
                     if (data.result === "success") {
                         alert("Demain ID added successfully");
                         closePopup();
+
+                        // Reload content after successful addition
+                        fetchContent();
                     } else {
                         alert("Error:" + data.message);
                     }
@@ -267,13 +278,20 @@ if (!isset($_SESSION['username'])) {
                     alert("Error connecting to server.");
                 });
         }
-
-        // "Using DEC" function
-        function useDEC() {
-            closePopup();
-            alert("Using DEC selected.");
-            // Thực hiện các hành động cần thiết khi chọn "Using DEC"
+        // Fetch data from API and display it in the contentContainer
+        function fetchContent() {
+            fetch("http://localhost/DEproject/API/getDec.php")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === "success") {
+                        displayContent(data.data);
+                    } else {
+                        console.error("Error fetching content:", data.message);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
         }
+
 
     </script>
 </body>
