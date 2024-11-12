@@ -31,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET'){
                 WHERE ud.userID = :userId AND d.type = :type";
     } else {
         // If type is equal to null, get everything
-        $sql = "SELECT d.demainId, d.title, d.description, d.content_url, d.iconPath, d.type
+        $sql = "SELECT d.demainId, d.title, d.type, d.description, d.content_url, d.iconPath, d.type
                 FROM demain d
                 JOIN user_demain ud ON d.demainId = ud.demainId
-                WHERE ud.userId = :userId";
+                WHERE ud.userId = :userId AND d.type != 'Sub'";
     }
     $stmt = $pdo->prepare($sql);
     $stmt -> bindParam(':userId', $userId, PDO::PARAM_INT);
