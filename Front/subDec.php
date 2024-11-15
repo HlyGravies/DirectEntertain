@@ -38,6 +38,66 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../CSS/home.css">
     <title>Sub DEC</title>
+    <style>
+        /* CSS cho pop-up */
+        .popup-overlay {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-window {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            width: 300px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-window h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .popup-window .option-button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .insert-button {
+            background-color: #4CAF50; /* Màu xanh lá cho Insert Manually */
+        }
+
+        .dec-button {
+            background-color: #1a73e8; /* Màu xanh dương cho Using DEC */
+        }
+
+        .close-popup {
+            margin-top: 15px;
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -57,13 +117,34 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- User Options -->
     <div class="user-options">
+        <!-- Add button -->
         <div class="add-button">
-            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;">
-                + New
-            </button>
+            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;"
+                    onclick="openPopup()">+ New</button>
+        </div>　
+
+        <!-- Pop-up Overlay & Pop-up Window -->
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup-window" id="popupWindow">
+                <h3>Select an Option</h3>
+                <button class="option-button insert-button" onclick="insertManually()">Insert manually</button>
+                <button class="option-button dec-button" onclick="useDEC()">Using DEC</button>
+                <button class="close-popup" onclick="closePopup()">Close</button>
+            </div>
         </div>
+
+        <!-- Pop-up for "Insert manually" -->
+        <div class="popup-overlay" id="insertBoxOverlay">
+            <div class="popup-window" id="insertBox">
+                <h3>Enter Demain ID</h3>
+                <input type="number" id="demainIdInput" placeholder="Enter demain ID">
+                <button class="confirm-button" onclick="submitDemainId()">Confirm</button>
+                <button class="close-popup" onclick="closeInsertBox()">Close</button>
+            </div>
+        </div>
+
         <div class="user-icon">
-            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="32" height="32"></a>
+            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="50" height="50"></a>
         </div>
     </div>
 </div>
@@ -83,9 +164,6 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Welcome back, <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?></h1>
-        <br> <br>
-
         <!-- DEC Section -->
         <h2>Sub DEC</h2>
         <div class="DEContainer" id="contentContainer">
@@ -152,6 +230,83 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
     });
+
+    // Open pop-up
+    function openPopup() {
+        document.getElementById('popupOverlay').style.display = 'block';
+    }
+
+    // Close pop-up
+    function closePopup() {
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+
+    // "Insert manually" function
+    function insertManually() {
+        document.getElementById('popupOverlay').style.display = 'none';
+        document.getElementById('insertBoxOverlay').style.display = 'block';
+    }
+
+    // Close the insert box
+    function closeInsertBox() {
+        document.getElementById('insertBoxOverlay').style.display = 'none';
+    }
+
+    // "Using DEC" function
+    function useDEC() {
+        closePopup();
+        alert("Using DEC selected.");
+        // Thực hiện các hành động cần thiết khi chọn "Using DEC"
+    }
+
+    // Return button for insert box
+
+    // Send demainID to API to add into database
+    function submitDemainId() {
+        const demainId = document.getElementById('demainIdInput').value;
+
+        if (!demainId) {
+            alert("Please enter a valid Demain ID");
+            return;
+        }
+
+        fetch("http://localhost/DEproject/API/addDEC.php", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({demainId: parseInt(demainId)})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === "success") {
+                    alert("Demain ID added successfully");
+                    closePopup();
+
+                    // Reload content after successful addition
+                    fetchContent();
+                } else {
+                    alert("Error:" + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error connecting to server.");
+            });
+    }
+    // Fetch data from API and display it in the contentContainer
+    function fetchContent() {
+        fetch("http://localhost/DEproject/API/getDec.php")
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === "success") {
+                    displayContent(data.data);
+                } else {
+                    console.error("Error fetching content:", data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
 </script>
 </body>
 

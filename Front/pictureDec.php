@@ -57,13 +57,33 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- User Options -->
     <div class="user-options">
+        <!-- Add button -->
         <div class="add-button">
-            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;">
-                + New
-            </button>
+            <button style="padding: 6px 10px; border: none; background-color: #1a73e8; color: white; border-radius: 4px;"
+                    onclick="openPopup()">+ New</button>
+        </div>　
+
+        <!-- Pop-up Overlay & Pop-up Window -->
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup-window" id="popupWindow">
+                <h3>Select an Option</h3>
+                <button class="option-button insert-button" onclick="insertManually()">Insert manually</button>
+                <button class="option-button dec-button" onclick="useDEC()">Using DEC</button>
+                <button class="close-popup" onclick="closePopup()">Close</button>
+            </div>
+        </div>
+
+        <!-- Pop-up for "Insert manually" -->
+        <div class="popup-overlay" id="insertBoxOverlay">
+            <div class="popup-window" id="insertBox">
+                <h3>Enter Demain ID</h3>
+                <input type="number" id="demainIdInput" placeholder="Enter demain ID">
+                <button class="confirm-button" onclick="submitDemainId()">Confirm</button>
+                <button class="close-popup" onclick="closeInsertBox()">Close</button>
+            </div>
         </div>
         <div class="user-icon">
-            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="32" height="32"></a>
+            <a href="userProfile.php"><img src="" alt="User Icon" id="userIcon" width="50" height="50"></a>
         </div>
     </div>
 </div>
@@ -83,9 +103,6 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Welcome back, <?php echo strtoupper(htmlspecialchars($_SESSION['username'])); ?></h1>
-        <br> <br>
-
         <!-- My DEC Section -->
         <h2>Picture DEC</h2>
         <div class="DEContainer" id="contentContainer">
@@ -152,6 +169,82 @@ $demainContent = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
     });
+    // Open pop-up
+    function openPopup() {
+        document.getElementById('popupOverlay').style.display = 'block';
+    }
+
+    // Close pop-up
+    function closePopup() {
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+
+    // "Insert manually" function
+    function insertManually() {
+        document.getElementById('popupOverlay').style.display = 'none';
+        document.getElementById('insertBoxOverlay').style.display = 'block';
+    }
+
+    // Close the insert box
+    function closeInsertBox() {
+        document.getElementById('insertBoxOverlay').style.display = 'none';
+    }
+
+    // "Using DEC" function
+    function useDEC() {
+        closePopup();
+        alert("Using DEC selected.");
+        // Thực hiện các hành động cần thiết khi chọn "Using DEC"
+    }
+
+    // Return button for insert box
+
+    // Send demainID to API to add into database
+    function submitDemainId() {
+        const demainId = document.getElementById('demainIdInput').value;
+
+        if (!demainId) {
+            alert("Please enter a valid Demain ID");
+            return;
+        }
+
+        fetch("http://localhost/DEproject/API/addDEC.php", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({demainId: parseInt(demainId)})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === "success") {
+                    alert("Demain ID added successfully");
+                    closePopup();
+
+                    // Reload content after successful addition
+                    fetchContent();
+                } else {
+                    alert("Error:" + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error connecting to server.");
+            });
+    }
+    // Fetch data from API and display it in the contentContainer
+    function fetchContent() {
+        fetch("http://localhost/DEproject/API/getDec.php")
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === "success") {
+                    displayContent(data.data);
+                } else {
+                    console.error("Error fetching content:", data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
 </script>
 </body>
 
